@@ -153,7 +153,9 @@ button:hover{
   <div class="card">Sold <br><span id="sold"></span></div>
 </div>
 
-<canvas id="chart" height="100"></canvas>
+<div style="width:400px; margin:20px auto;">
+  <canvas id="chart"></canvas>
+</div>
 <div class="search-box">
   <input id="search" placeholder="🔍 Search vehicle..." onkeyup="render()">
 </div>
@@ -181,20 +183,25 @@ function updateDashboard(){
     chart.destroy();
   }
 
-  chart = new Chart(ctx, {
-    type: 'bar',
-    data: {
-      labels: ['Total', 'Available', 'Sold'],
-      datasets: [{
-        label: 'Vehicles',
-        data: [
-          vehicles.length,
-          vehicles.filter(v=>v.status==='available').length,
-          vehicles.filter(v=>v.status==='sold').length
-        ]
-      }]
-    }
-  });
+chart = new Chart(ctx, {
+  type: 'bar',
+  data: {
+    labels: ['Total', 'Available', 'Sold'],
+    datasets: [{
+      label: 'Vehicles',
+      data: [
+        vehicles.length,
+        vehicles.filter(v=>v.status==='available').length,
+        vehicles.filter(v=>v.status==='sold').length
+      ],
+      backgroundColor: ['#facc15','#22c55e','#ef4444']
+    }]
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: true
+  }
+});
 }
 
 // ================= CLEAN DATABASE =================
@@ -305,3 +312,4 @@ loadData();
 
 </body>
 </html>
+
