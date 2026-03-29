@@ -123,6 +123,14 @@ button:hover{
 }
 </style>
 
+<style>
+.chart-container{
+  width: 100%;
+  height: 350px;
+  margin: 70px 0;
+}
+</style>
+
 </head>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <body>
@@ -153,16 +161,17 @@ button:hover{
   <div class="card">Sold <br><span id="sold"></span></div>
 </div>
 
-<div style="width:400px; margin:20px auto;">
+<div class="chart-container">
   <canvas id="chart"></canvas>
 </div>
+
 <div class="search-box">
   <input id="search" placeholder="🔍 Search vehicle..." onkeyup="render()">
 </div>
 <table>
 <thead>
 <tr>
-<th>#</th><th>Make</th><th>Model</th><th>Year</th><th>VIN</th><th>Price</th><th>Action</th>
+<th>#</th><th>Make</th><th>Model</th><th>Year</th><th>VIN</th><th>Price</th><th>Status</th><th>Action</th>
 </tr>
 </thead>
 <tbody id="tbody"></tbody>
@@ -183,7 +192,7 @@ function updateDashboard(){
     chart.destroy();
   }
 
-chart = new Chart(ctx, {
+  chart = new Chart(ctx, {
   type: 'bar',
   data: {
     labels: ['Total', 'Available', 'Sold'],
@@ -194,12 +203,22 @@ chart = new Chart(ctx, {
         vehicles.filter(v=>v.status==='available').length,
         vehicles.filter(v=>v.status==='sold').length
       ],
-      backgroundColor: ['#facc15','#22c55e','#ef4444']
+      backgroundColor: ['#06b6d4','#06b6d4','#06b6d4'],
+      barThickness: 70   // 🔥 reduced width
     }]
   },
   options: {
     responsive: true,
-    maintainAspectRatio: true
+    maintainAspectRatio: false,
+    animation: {
+      duration: 1200,
+      easing: 'easeOutQuart'
+    },
+    scales: {
+      y: {
+        beginAtZero: true
+      }
+    }
   }
 });
 }
@@ -238,6 +257,9 @@ function render(){
       <td>${v.year}</td>
       <td>${v.vin}</td>
       <td>${v.price}</td>
+<td style="color:${v.status==='sold' ? 'red' : 'lightgreen'}">
+  ${v.status}
+</td>
       <td>
         <button class="edit-btn" onclick="editVehicle(${v.id})">Edit</button>
         <button class="delete-btn" onclick="deleteVehicle(${v.id})">Delete</button>
@@ -271,14 +293,17 @@ async function saveVehicle(){
     editId = null;
   }
 
-  clearForm();
-  loadData();
+alert("Vehicle saved successfully!");
+clearForm();
+loadData();
 }
 
 // ================= DELETE =================
 async function deleteVehicle(id){
-  await fetch('/api/vehicles/'+id,{method:'DELETE'});
-  loadData();
+  if(confirm("Are you sure to delete this vehicle?")){
+    await fetch('/api/vehicles/'+id,{method:'DELETE'});
+    loadData();
+  }
 }
 
 // ================= EDIT =================
@@ -312,4 +337,3 @@ loadData();
 
 </body>
 </html>
-
